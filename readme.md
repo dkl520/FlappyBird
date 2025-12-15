@@ -1,64 +1,84 @@
-# PyTorch 强化学习环境安装指南
+# Flappy Bird 强化学习 / Flappy Bird Reinforcement Learning
 
-## 1. 核心导航 (最重要的第一行)
+本项目使用 `Gymnasium` 的 `FlappyBird-v0` 环境和两套强化学习方案（`Stable-Baselines3` 的 DQN 以及自定义的 PPO）训练智能体自动玩 Flappy Bird。你可以选择显示游戏画面进行测试，也可以在无渲染模式下进行高效训练。
 
-### `--index-url https://download.pytorch.org/whl/cu121`
+This project trains an agent to play Flappy Bird using the `Gymnasium` `FlappyBird-v0` environment with two RL approaches: DQN from `Stable-Baselines3` and a custom PPO implementation. You can test with rendering enabled or train efficiently without rendering.
 
-- **意思**: "去哪买"
-- **作用**: 这是整张清单里最关键的一行!如果不写这行,pip 会去默认的"普通超市"下载,那里只有跑得慢的 CPU 版。这行命令强行告诉 pip:"去 NVIDIA 专卖店(CUDA 12.1 分店)进货!" 只有这样,后面下载的 PyTorch 才是能用显卡加速的版本。
+## 目录概览 / Directory Overview
+- `main.py` / `main2.py`: 使用 Stable-Baselines3 DQN 训练与测试（含断点续训、检查点保存）
+- `v12_最终版本.py`: 自定义 PPO 训练与“无限测试”模式
+- `manual_models/`: 手动保存的 PPO `.pth` 模型
+- `trained_models/`: 历史训练得到的 `.zip` 模型集合
+- `.idea/`: IDE 项目配置
+- 其他 `v*` 脚本：不同实验版本（如无限模式、中文提示等）
 
----
+## 环境与依赖 / Environment & Dependencies
+- Python 3.9+ 建议（Recommendation）
+- 必需（Required）:
+  - `gymnasium`, `flappy-bird-gymnasium`
+  - `stable-baselines3`
+  - `numpy`, `tqdm`
+  - `torch`（可选 GPU 加速）
+- GPU 加速安装（CUDA 12.1）/ GPU install (CUDA 12.1):
+  - `pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121`
+  - 如无 GPU，可直接 `pip install torch torchvision torchaudio`
 
-## 2. PyTorch 全家桶 (底层引擎)
-
-### `torch`
-- **意思**: 深度学习框架核心
-- **作用**: 这是发动机。它负责所有的矩阵运算、反向传播。你的显卡(RTX 2060)就是通过这个库被调用的。
-
-### `torchvision`
-- **意思**: 图片处理工具包(Vision = 视觉)
-- **作用**: 这是眼睛。因为 Flappy Bird 是通过画面(图像)来训练的,这个库负责处理游戏的每一帧截图,把它变成神经网络能看懂的数据。
-
-### `torchaudio`
-- **意思**: 音频处理工具包
-- **作用**: 这是耳朵。虽然你现在的 Flappy Bird 可能只用画面训练,不听声音,但这是 PyTorch 的标准组件,通常一起安装以防万一以后需要处理声音信号。
-
----
-
-## 3. 强化学习组件 (大脑与环境)
-
-### `stable-baselines3`
-- **意思**: 强化学习算法库
-- **作用**: 这是大脑/教练。这里面装着 PPO、DQN 等现成的算法。它负责根据当前的情况决定是"跳"还是"不跳",并总结经验。
-
-### `gymnasium`
-- **意思**: 强化学习环境标准库(以前叫 OpenAI Gym)
-- **作用**: 这是游戏世界/训练场。它定义了什么是"动作"(比如按空格键),什么是"观察"(比如鸟的位置),什么是"奖励"(比如过了一根管子 +1 分,撞死 -1 分)。
-
----
-
-## 4. 基础数学库
-
-### `numpy`
-- **意思**: 数值计算库
-- **作用**: 这是砖块。它是 Python 数据科学的地基。上面所有的库(Torch, Gymnasium)在底层处理数据时,其实都在不停地搬运 Numpy 数组。
-
----
-
-## 总结:它们在项目中的协作方式
-
-1. **Gymnasium** 搭建了 Flappy Bird 的游戏舞台
-2. **Torchvision** 帮你把游戏画面"看"进来
-3. **Stable-Baselines3** 思考在这个画面下该不该跳
-4. **Torch** 指挥你的 RTX 2060 显卡疯狂计算,算出这个决策对不对
-5. **--index-url ...** 保证了这一切是发生在显卡上,而不是慢吞吞的 CPU 上
-
----
-
-## 完整安装命令
-
+## 安装 / Installation
 ```bash
-pip install torch torchvision torchaudio stable-baselines3 gymnasium numpy --index-url https://download.pytorch.org/whl/cu121
+pip install gymnasium flappy-bird-gymnasium stable-baselines3 numpy tqdm
+# GPU 可选（CUDA 12.1）
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+```
+验证 GPU / Check GPU:
+```bash
+python test_gpu.py
 ```
 
-> **提示**: 确保你的系统已安装 CUDA 12.1 驱动,这样显卡加速才能正常工作!
+## 快速开始 / Quick Start
+### 方案一：DQN（Stable-Baselines3）
+- 训练（Train）：编辑 `main.py`，取消 `train()` 调用，然后运行：
+```bash
+python main.py
+```
+- 测试（Test）：确保 `SHOW_GAME = True`，默认执行 `test()`：
+```bash
+python main.py
+```
+- 模型保存（Model Save）：`models/flappy_bird/flappy_bird_final.zip` 与周期性 `ckpt_*.zip`
+
+关键代码位置 / Key references:
+- 训练入口：`main.py:43`（`train()`）
+- 测试入口：`main.py:128`（`test()`）
+- 渲染控制：`main.py:24-26`（`SHOW_GAME`）
+
+### 方案二：PPO（自定义实现 / Custom）
+- 训练（Train）：编辑 `v12_最终版本.py`，启用 `train()` 调用后运行：
+```bash
+python v12_最终版本.py
+```
+- 测试（Test/无限模式）：默认执行 `test()`，需先准备模型：
+  - 模型路径：`manual_models/ppo_flappy_final12.pth`
+```bash
+python v12_最终版本.py
+```
+关键代码位置 / Key references:
+- 训练入口：`v12_最终版本.py:184`（`train()`）
+- 测试入口：`v12_最终版本.py:361-363`（`test()`）
+- 安全奖励包装器：`v12_最终版本.py:28-43`（`StrictSafetyWrapper`）
+
+## 常用配置 / Common Configuration
+- 是否使用 Lidar 状态（12 维简化状态）：`main.py:21-23`（`USE_LIDAR`）
+- 可视化开关（渲染模式）：`main.py:24-26`（`SHOW_GAME` 与 `render_mode`）
+- 训练步数与检查点频率：`main.py:99-107`、`main.py:49-53`
+- PPO 超参数与进度条：`v12_最终版本.py:11-22`、`v12_最终版本.py:215-263`
+
+## 运行提示 / Tips
+- 首次使用 DQN 时，若不存在最终模型，将自动从零开始训练并定期保存检查点。
+- PPO 测试为“无限模式”，如需停止，使用 `Ctrl+C`。
+- 若遇到导入失败，请确认已安装 `flappy-bird-gymnasium` 与兼容版本的 `gymnasium`。
+- 若需更高分数，增加训练步数（例如 DQN 的 `TRAIN_STEPS`）。
+
+## 致谢 / Acknowledgements
+- `Gymnasium` 与 `flappy-bird-gymnasium` 提供环境支持
+- `Stable-Baselines3` 提供 DQN 算法实现
+- `PyTorch` 提供深度学习计算后端
