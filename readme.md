@@ -1,84 +1,73 @@
-# Flappy Bird 强化学习 / Flappy Bird Reinforcement Learning
+# Flappy Bird 强化学习（仅PPO） / Flappy Bird Reinforcement Learning (PPO Only)
 
-本项目使用 `Gymnasium` 的 `FlappyBird-v0` 环境和两套强化学习方案（`Stable-Baselines3` 的 DQN 以及自定义的 PPO）训练智能体自动玩 Flappy Bird。你可以选择显示游戏画面进行测试，也可以在无渲染模式下进行高效训练。
+本项目仅关注自定义 PPO 实现，位于 `v12_最终版本.py`。通过 `Gymnasium` 的 `FlappyBird-v0` 环境训练智能体，并支持断点续训与“无限测试”模式。
 
-This project trains an agent to play Flappy Bird using the `Gymnasium` `FlappyBird-v0` environment with two RL approaches: DQN from `Stable-Baselines3` and a custom PPO implementation. You can test with rendering enabled or train efficiently without rendering.
+This project focuses on a custom PPO implementation in `v12_最终版本.py`, training an agent in the `Gymnasium` `FlappyBird-v0` environment, with resume training and an infinite test mode.
 
-## 目录概览 / Directory Overview
-- `main.py` / `main2.py`: 使用 Stable-Baselines3 DQN 训练与测试（含断点续训、检查点保存）
-- `v12_最终版本.py`: 自定义 PPO 训练与“无限测试”模式
-- `manual_models/`: 手动保存的 PPO `.pth` 模型
-- `trained_models/`: 历史训练得到的 `.zip` 模型集合
-- `.idea/`: IDE 项目配置
-- 其他 `v*` 脚本：不同实验版本（如无限模式、中文提示等）
+## 文件与结构 / Files & Structure
+### 这是最终版本
+- `v12_最终版本.py`: 训练与测试主脚本（PPO 自定义实现）
+- `manual_models/`: PPO 模型权重保存目录（`.pth`）
 
-## 环境与依赖 / Environment & Dependencies
-- Python 3.9+ 建议（Recommendation）
-- 必需（Required）:
-  - `gymnasium`, `flappy-bird-gymnasium`
-  - `stable-baselines3`
-  - `numpy`, `tqdm`
-  - `torch`（可选 GPU 加速）
-- GPU 加速安装（CUDA 12.1）/ GPU install (CUDA 12.1):
-  - `pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121`
-  - 如无 GPU，可直接 `pip install torch torchvision torchaudio`
-
-## 安装 / Installation
+## 依赖 / Dependencies
 ```bash
-pip install gymnasium flappy-bird-gymnasium stable-baselines3 numpy tqdm
-# GPU 可选（CUDA 12.1）
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+pip install gymnasium flappy-bird-gymnasium numpy tqdm torch
 ```
-验证 GPU / Check GPU:
-```bash
-python test_gpu.py
-```
+- GPU（可选）：`pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121`
+- 验证 GPU：`python test_gpu.py`
 
-## 快速开始 / Quick Start
-### 方案一：DQN（Stable-Baselines3）
-- 训练（Train）：编辑 `main.py`，取消 `train()` 调用，然后运行：
-```bash
-python main.py
-```
-- 测试（Test）：确保 `SHOW_GAME = True`，默认执行 `test()`：
-```bash
-python main.py
-```
-- 模型保存（Model Save）：`models/flappy_bird/flappy_bird_final.zip` 与周期性 `ckpt_*.zip`
+## 关键功能 / Key Components
+- 安全奖励包装器（避免贴管飞行）：`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:28-43`
+- Actor-Critic 网络：`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:46-66`
+- PPO 算法类：`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:91-163`
+- 训练流程（断点续训+进度条+定期保存）：`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:183-287`
+- 无限测试模式（人为终止）：`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:293-359`
 
-关键代码位置 / Key references:
-- 训练入口：`main.py:43`（`train()`）
-- 测试入口：`main.py:128`（`test()`）
-- 渲染控制：`main.py:24-26`（`SHOW_GAME`）
-
-### 方案二：PPO（自定义实现 / Custom）
-- 训练（Train）：编辑 `v12_最终版本.py`，启用 `train()` 调用后运行：
+## 运行 / How to Run
+### 训练（Train）
+1) 在 `v12_最终版本.py` 中启用 `train()` 调用：`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:361-363`
+2) 运行：
 ```bash
 python v12_最终版本.py
 ```
-- 测试（Test/无限模式）：默认执行 `test()`，需先准备模型：
-  - 模型路径：`manual_models/ppo_flappy_final12.pth`
+- 环境创建与安全包装：`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:187-189`
+- 断点续训模型路径：`manual_models/ppo_flappy_final12.pth`（`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:197-205`）
+- 定期阶段保存：`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:264-273`
+- 最终保存：`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:275-287`
+
+### 测试（Test / 无限模式）
+- 默认启用 `test()`：`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:361-363`
+- 渲染与长局设置：`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:298-304`
+- 无限循环播放：`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:320-358`
+- 运行：
 ```bash
 python v12_最终版本.py
 ```
-关键代码位置 / Key references:
-- 训练入口：`v12_最终版本.py:184`（`train()`）
-- 测试入口：`v12_最终版本.py:361-363`（`test()`）
-- 安全奖励包装器：`v12_最终版本.py:28-43`（`StrictSafetyWrapper`）
 
-## 常用配置 / Common Configuration
-- 是否使用 Lidar 状态（12 维简化状态）：`main.py:21-23`（`USE_LIDAR`）
-- 可视化开关（渲染模式）：`main.py:24-26`（`SHOW_GAME` 与 `render_mode`）
-- 训练步数与检查点频率：`main.py:99-107`、`main.py:49-53`
-- PPO 超参数与进度条：`v12_最终版本.py:11-22`、`v12_最终版本.py:215-263`
 
-## 运行提示 / Tips
-- 首次使用 DQN 时，若不存在最终模型，将自动从零开始训练并定期保存检查点。
-- PPO 测试为“无限模式”，如需停止，使用 `Ctrl+C`。
-- 若遇到导入失败，请确认已安装 `flappy-bird-gymnasium` 与兼容版本的 `gymnasium`。
-- 若需更高分数，增加训练步数（例如 DQN 的 `TRAIN_STEPS`）。
+# 重点
 
-## 致谢 / Acknowledgements
-- `Gymnasium` 与 `flappy-bird-gymnasium` 提供环境支持
-- `Stable-Baselines3` 提供 DQN 算法实现
-- `PyTorch` 提供深度学习计算后端
+- 我在多个版本种运行错误，主要原因就是 这个游戏模型本身的不健全导致的。就是说这个模型本身有盲区/bug
+- 主要问题在于 雷达模式。 雷达模式训练才能达到无敌模式。 但是这里的雷达模式 只有180度（你可以看到红色线只有180度），这就导致小
+- 鸟在跳跃的过程中，后脑勺碰到管子，这个错误没有办法修正！！！！因为它的后脑勺没有光线，无论你训练多少次，
+- 这个bug永远没有办法通过train修复！！！
+- train 调参的前提是有参数。 小鸟的后脑勺没有雷达参数，导致永远无法调参成功~！！！！！
+- 解决办法： 我修改了小鸟的模型， 从180度的雷达参数 调整到了240度。 小鸟后脑勺有了参数，消灭了视野盲区， 解决了 这个bug
+- 具体请看图： ![我的本地图片](test.png)
+
+
+
+## 超参数（摘录） / Hyperparameters (Excerpt)
+- 学习率：`LEARNING_RATE = 2.5e-4`（`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:13`）
+- 折扣因子：`GAMMA = 0.99`（`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:14`）
+- GAE：`LAMBDA = 0.95`（`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:15`）
+- 截断范围：`EPS_CLIP = 0.2`（`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:16`）
+- 更新轮次：`K_EPOCHS = 10`（`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:17`）
+- 批大小：`BATCH_SIZE = 64`（`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:18`）
+- 更新步长：`UPDATE_TIMESTEP = 2048`（`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:19`）
+- 总步数：`TOTAL_TIMESTEPS = 1_000_000`（`d:\\python 项目\\Flappy Bird\\v12_最终版本.py:20`）
+
+## 提示 / Tips
+- 首次训练不存在模型时将从零开始；若存在 `manual_models/ppo_flappy_final12.pth` 则自动续训。
+- 测试为无限模式，使用 `Ctrl+C` 结束。
+- 无 GPU 亦可运行；有 GPU 建议使用 CUDA 版 PyTorch。
