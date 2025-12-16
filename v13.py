@@ -17,7 +17,7 @@ DEVICE = "cpu"  # 保持你原来的设置
 
 # ================= 🛡️ 安全奖励包装器 (保留原逻辑) =================
 class StrictSafetyWrapper(gym.Wrapper):
-    def __init__(self, env, safe_dist=0.20):
+    def __init__(self, env, safe_dist=0.10):
         super().__init__(env)
         self.safe_dist = safe_dist
 
@@ -27,7 +27,7 @@ class StrictSafetyWrapper(gym.Wrapper):
         # SB3 的环境通常会自动处理 obs，但在单环境 Wrapper 中 obs 还是 numpy 数组
         # 你的逻辑：惩罚贴管飞行
         if np.min(obs) < self.safe_dist:
-            reward += 0.05
+            reward -= 0.05
 
         return obs, reward, terminated, truncated, info
 
@@ -38,8 +38,8 @@ def train():
 
     # 1. 创建环境 (Monitor 用于记录数据给 SB3)
     env = gym.make(ENV_ID, use_lidar=True, background=None)
-    env = StrictSafetyWrapper(env, safe_dist=0.20)
-    env = Monitor(env)
+    env = StrictSafetyWrapper(env, safe_dist=0.10)
+    # env = Monitor(env)
 
     # 2. 路径处理
     os.makedirs(MODEL_DIR, exist_ok=True)
@@ -144,5 +144,5 @@ def test():
 
 
 if __name__ == "__main__":
-    # train() # 训练模式
-    test()  # 测试模式
+    train() # 训练模式
+    # test()  # 测试模式

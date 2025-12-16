@@ -12,7 +12,7 @@ from stable_baselines3.common.evaluation import evaluate_policy  # 用于评估�
 # ==========================================
 # ⚙️ 全局配置：定义训练和日志路径、超参数等
 # ==========================================
-MODELS_DIR = "models/flappy_ppo_hardv7"  # 模型保存目录（区别于普通版本）
+MODELS_DIR = "models/flappy_ppo_hardv15"  # 模型保存目录（区别于普通版本）
 LOG_DIR = "logs/flappy_ppo_hard"       # TensorBoard 日志目录
 BEST_MODEL_NAME = "best_model"         # 最佳模型文件名（自动保存）
 FINAL_MODEL_NAME = "last_run_model"    # 最终模型文件名（每次训练结束保存）
